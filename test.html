@@ -2,32 +2,78 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Glass-Like Square Example</title>
+  <title>Draggable Liquid Glass Square</title>
   <style>
     body {
       min-height: 100vh;
+      margin: 0;
       background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0;
+      overflow: hidden;
     }
-    .glass-square {
-      width: 300px;
-      height: 300px;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 16px;
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
+    .liquid-glass {
+      width: 320px;
+      height: 320px;
+      position: absolute;
+      top: 100px;
+      left: 100px;
+      border-radius: 2rem;
+      background: rgba(255,255,255,0.14);
+      box-shadow:
+        0 8px 32px rgba(31,38,135,0.2),
+        inset 0 4px 20px rgba(255,255,255,0.3);
+      border: 1.5px solid rgba(255,255,255,0.8);
+      backdrop-filter: blur(15px) saturate(180%);
+      -webkit-backdrop-filter: blur(15px) saturate(180%);
+      cursor: grab;
+      overflow: hidden;
+      z-index: 10;
+    }
+    .liquid-glass::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      border-radius: 2rem;
+      background: rgba(255,255,255,0.18);
+      backdrop-filter: blur(2px);
+      box-shadow:
+        inset -10px -8px 0px -11px rgba(255,255,255,1),
+        inset 0px -9px 0px -8px rgba(255,255,255,1);
+      opacity: 0.7;
+      z-index: 1;
+      pointer-events: none;
+      filter: blur(1px) drop-shadow(10px 4px 6px black) brightness(115%);
+    }
+    /* Optional: animated liquid shine */
+    .liquid-glass::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; width: 100%; height: 100%;
+      border-radius: 2rem;
+      background: linear-gradient(120deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.08) 100%);
+      opacity: 0.5;
+      z-index: 2;
+      pointer-events: none;
+      mix-blend-mode: lighten;
+      animation: shine 3s linear infinite;
+    }
+    @keyframes shine {
+      0% { opacity: 0.5; }
+      50% { opacity: 0.7; }
+      100% { opacity: 0.5; }
+    }
+    .liquid-glass-content {
+      position: relative;
+      z-index: 3;
       color: #fff;
+      font-size: 2rem;
       font-family: sans-serif;
+      text-align: center;
+      line-height: 320px;
       user-select: none;
+      pointer-events: none;
     }
   </style>
 </head>
@@ -35,5 +81,31 @@
   <div class="liquid-glass" id="glass">
     <div class="liquid-glass-content">Liquid Glass</div>
   </div>
+  <script>
+    // Draggable functionality
+    const glass = document.getElementById('glass');
+    let isDragging = false, startX, startY, origX, origY;
+    glass.addEventListener('mousedown', function(e) {
+      isDragging = true;
+      glass.style.cursor = 'grabbing';
+      startX = e.clientX;
+      startY = e.clientY;
+      origX = glass.offsetLeft;
+      origY = glass.offsetTop;
+      document.body.style.userSelect = 'none';
+    });
+    document.addEventListener('mousemove', function(e) {
+      if (!isDragging) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      glass.style.left = (origX + dx) + 'px';
+      glass.style.top = (origY + dy) + 'px';
+    });
+    document.addEventListener('mouseup', function() {
+      isDragging = false;
+      glass.style.cursor = 'grab';
+      document.body.style.userSelect = '';
+    });
+  </script>
 </body>
 </html>
