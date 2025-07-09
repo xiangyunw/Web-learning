@@ -1,1 +1,2 @@
-# Web-learning
+# Java-learning
+https://www.tutorialspoint.com/java/java_variable_types.htm
